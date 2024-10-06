@@ -1,16 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraFllow : MonoBehaviour {
+public class animatorController : MonoBehaviour {
 
     public Animator animator;
-    private CharacterController Soldier_Controller_RootMotion;
-    float speed = 1;
+    public Transform gunPoint;
+    public Transform player;
+    public Text blood;
+    public Text time;
+    public int bloodnum = 100;
+    int attackValue = 10;
+
     void Start()
     {
-       Soldier_Controller_RootMotion = GetComponent<CharacterController>();
+
     }
 
     void Update()
@@ -29,11 +35,7 @@ public class CameraFllow : MonoBehaviour {
         }
         if(Input.GetKey(KeyCode.W))
         {
-            float horizontal = Input.GetAxis("Horizontal");
             animator.SetTrigger("walk");
-            float vertical = Input.GetAxis("Vertical");
-            Vector3 dir1 = new Vector3(horizontal,0,vertical);
-            Soldier_Controller_RootMotion.SimpleMove(dir1*10);
         }
         if(Input.GetKeyUp(KeyCode.W))
         {
@@ -41,11 +43,7 @@ public class CameraFllow : MonoBehaviour {
         }
         if(Input.GetKey(KeyCode.S))
         {
-            float horizontal = Input.GetAxis("Horizontal");
             animator.SetTrigger("houtui");
-            float vertical = Input.GetAxis("Vertical");
-            Vector3 dir1 = new Vector3(horizontal,0,vertical);
-            Soldier_Controller_RootMotion.SimpleMove(dir1*10);
         }
         if(Input.GetKeyUp(KeyCode.S))
         {
@@ -54,30 +52,54 @@ public class CameraFllow : MonoBehaviour {
         }
         if(Input.GetKey(KeyCode.A))
         {
-            float horizontal = Input.GetAxis("Horizontal");
-            animator.SetTrigger("walk");
-            float vertical = Input.GetAxis("Vertical");
-            Vector3 dir1 = new Vector3(horizontal,0,vertical);
-            Soldier_Controller_RootMotion.SimpleMove(dir1*10);
+            animator.SetTrigger("left");
         }
         if(Input.GetKeyUp(KeyCode.A))
         {
-            animator.ResetTrigger("walk");
+            animator.ResetTrigger("left");
         }
         if(Input.GetKey(KeyCode.D))
         {
-            float horizontal = Input.GetAxis("Horizontal");
-            animator.SetTrigger("houtui");
-            float vertical = Input.GetAxis("Vertical");
-            Vector3 dir1 = new Vector3(horizontal,0,vertical);
-            Soldier_Controller_RootMotion.SimpleMove(dir1*10);
+            animator.SetTrigger("right");
         }
         if(Input.GetKeyUp(KeyCode.D))
         {
-            animator.ResetTrigger("houtui");
+            animator.ResetTrigger("right");
 
         }
+        Atack();
+        diaoxue();
+        time.text = "time"+DateTime.Now.ToString();
     }
-
+    private void Atack()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            
+            RaycastHit hit;
+            if(Physics.Raycast(gunPoint.position,gunPoint.forward,out hit,100))
+            {
+                if(hit.collider.CompareTag("enemy"))
+                {
+                    hit.transform.GetComponent<enemymove>().TakeDamage(attackValue);
+                }
+            }
+        }
+    }
+    public void diaoxue()
+    {
+        if(Vector3.Distance(transform.position,player.position)<=2)
+        {
+            bloodnum -=10;
+            blood.text = "blood:"+bloodnum.ToString();
+            if(bloodnum<=0)
+            {
+                blood.text = "gameover";
+            }
+        }
+    }
 }
+        
+
+
 
